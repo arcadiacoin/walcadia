@@ -13,13 +13,13 @@ const nacl = window['nacl'];
 @Injectable()
 export class NanoBlockService {
   representativeAccounts = [
-    'nano_1x7biz69cem95oo7gxkrw6kzhfywq4x5dupw4z1bdzkb74dk9kpxwzjbdhhs', // NanoCrawler
-    'nano_1zuksmn4e8tjw1ch8m8fbrwy5459bx8645o9euj699rs13qy6ysjhrewioey', // Nanowallets.guide
-    'nano_3chartsi6ja8ay1qq9xg3xegqnbg1qx76nouw6jedyb8wx3r4wu94rxap7hg', // Nano Charts
-    'nano_1ninja7rh37ehfp9utkor5ixmxyg8kme8fnzc4zty145ibch8kf5jwpnzr3r', // My Nano Ninja
-    'nano_1iuz18n4g4wfp9gf7p1s8qkygxw7wx9qfjq6a9aq68uyrdnningdcjontgar', // NanoTicker / Json
-    'nano_3power3gwb43rs7u9ky3rsjp6fojftejceexfkf845sfczyue4q3r1hfpr3o', // PowerNode
-    'nano_1ookerz3adg5rxc4zwwoshim5yyyihf6dpogjihwwq6ksjpq7ea4fuam5mmc', // Nanolooker.com
+    'adia_31doaspp35zpbpe8o7hdwx448yiins7n1hkotzfypdk8oerygwnq6e5xg8rh', // Scattered PAWniverse
+    'adia_1xrzm6schbcck81ni4eqs3qyoo9sagwhpop7s41pbosp46a1bkf8mujrs7z8', // Unicorn Dog Tribe
+    'adia_34xp9szeo6qf6k4j4nobp6xnpahgiwxsd5mmihxtagpzr1eshzq4gppqhnd5', // Lucky Luck Horse
+    'adia_3i47t39qg9jetdpkppt6s4wq54ij89z4ox9biwasq47x977yqdg57tbgxhuc', // Catchy Swan
+    'adia_3biy5t839zswunhp7ue4ktjwx4xgiiaayo684r1c17uga5ytpe96nhhor9k1', // Noble Elephant
+    'adia_1anhdw5b8mthmjsf9od8r1joj9mpzdsr4mtrnrbmrq171879y98fkoo64az1', // Fastest Horse
+    'adia_1uadr9cpprbx6herfipsaf8w8wadmpm9by66fdgz3d4ajzqsk9d1z9ai9hdq', // MonkeyKing
   ];
 
   zeroHash = '0000000000000000000000000000000000000000000000000000000000000000';

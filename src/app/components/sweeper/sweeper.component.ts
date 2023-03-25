@@ -7,8 +7,8 @@ import {UtilService, TxType} from '../../services/util.service';
 import {WorkPoolService} from '../../services/work-pool.service';
 import {AppSettingsService} from '../../services/app-settings.service';
 import {NanoBlockService} from '../../services/nano-block.service';
-import * as nanocurrency from 'nanocurrency';
-import { wallet } from 'nanocurrency-web';
+import * as pawcurrency from 'pawcurrency';
+import { wallet } from 'pawcurrency-web';
 import * as bip39 from 'bip39';
 import {Router} from '@angular/router';
 
@@ -140,7 +140,7 @@ export class SweeperComponent implements OnInit {
   }
 
   destinationChange(address) {
-    if (nanocurrency.checkAddress(address)) {
+    if (pawcurrency.checkAddress(address)) {
       this.validDestination = true;
     } else {
       this.validDestination = false;
@@ -151,7 +151,7 @@ export class SweeperComponent implements OnInit {
     let invalid = false;
     if (this.util.string.isNumeric(index) && index % 1 === 0) {
       index = parseInt(index, 10);
-      if (!nanocurrency.checkIndex(index)) {
+      if (!pawcurrency.checkIndex(index)) {
         invalid = true;
       }
       if (index > INDEX_MAX) {
@@ -177,7 +177,7 @@ export class SweeperComponent implements OnInit {
     let invalid = false;
     if (this.util.string.isNumeric(index) && index % 1 === 0) {
       index = parseInt(index, 10);
-      if (!nanocurrency.checkIndex(index)) {
+      if (!pawcurrency.checkIndex(index)) {
         invalid = true;
       }
       if (index > INDEX_MAX) {
@@ -218,8 +218,8 @@ export class SweeperComponent implements OnInit {
   checkMasterKey(key) {
     // validate nano seed or private key
     if (key.length === 64) {
-      if (nanocurrency.checkSeed(key)) {
-        return 'nano_seed';
+      if (pawcurrency.checkSeed(key)) {
+        return 'adia_seed';
       }
     }
     // validate bip39 seed
@@ -248,19 +248,19 @@ export class SweeperComponent implements OnInit {
 
   // Process final send block
   async processSend(privKey, previous, sendCallback) {
-    const pubKey = nanocurrency.derivePublicKey(privKey);
-    const address = nanocurrency.deriveAddress(pubKey, {useNanoPrefix: true});
+    const pubKey = pawcurrency.derivePublicKey(privKey);
+    const address = pawcurrency.deriveAddress(pubKey, {useNanoPrefix: true});
 
     // make an extra check on valid destination
-    if (this.validDestination && nanocurrency.checkAddress(this.destinationAccount)) {
+    if (this.validDestination && pawcurrency.checkAddress(this.destinationAccount)) {
       this.appendLog('Transfer started: ' + address);
       const work = await this.workPool.getWork(previous, 1); // send threshold
       // create the block with the work found
-      const block = nanocurrency.createBlock(privKey, {balance: '0', representative: this.representative,
+      const block = pawcurrency.createBlock(privKey, {balance: '0', representative: this.representative,
       work: work, link: this.destinationAccount, previous: previous});
-      // replace xrb with nano (old library)
-      block.block.account = block.block.account.replace('xrb', 'nano');
-      block.block.link_as_account = block.block.link_as_account.replace('xrb', 'nano');
+      // replace paw with adia (old library)
+      block.block.account = block.block.account.replace('paw', 'adia');
+      block.block.link_as_account = block.block.link_as_account.replace('paw', 'adia');
 
       // publish block for each iteration
       const data = await this.api.process(block.block, TxType.send);
@@ -306,11 +306,11 @@ export class SweeperComponent implements OnInit {
       }
       const work = await this.workPool.getWork(workInputHash, 1 / 64); // receive threshold
       // create the block with the work found
-      const block = nanocurrency.createBlock(this.privKey, {balance: this.adjustedBalance, representative: this.representative,
+      const block = pawcurrency.createBlock(this.privKey, {balance: this.adjustedBalance, representative: this.representative,
       work: work, link: key, previous: this.previous});
-      // replace xrb with nano (old library)
-      block.block.account = block.block.account.replace('xrb', 'nano');
-      block.block.link_as_account = block.block.link_as_account.replace('xrb', 'nano');
+      // replace paw with adia (old library)
+      block.block.account = block.block.account.replace('paw', 'adia');
+      block.block.link_as_account = block.block.link_as_account.replace('paw', 'adia');
       // new previous
       this.previous = block.hash;
 
@@ -379,8 +379,8 @@ export class SweeperComponent implements OnInit {
         raw = this.util.big.add(raw, data.blocks[key].amount);
       }.bind(this));
       const nanoAmount = this.util.nano.rawToMnano(raw);
-      const pending = {count: Object.keys(data.blocks).length, raw: raw, XNO: nanoAmount, blocks: data.blocks};
-      const row = 'Found ' + pending.count + ' pending containing total ' + pending.XNO + ' XNO';
+      const pending = {count: Object.keys(data.blocks).length, raw: raw, ADIA: nanoAmount, blocks: data.blocks};
+      const row = 'Found ' + pending.count + ' pending containing total ' + pending.ADIA + ' ADIA';
       this.appendLog(row);
 
       // create receive blocks for all pending
@@ -409,8 +409,8 @@ export class SweeperComponent implements OnInit {
       return;
     }
 
-    this.pubKey = nanocurrency.derivePublicKey(privKey);
-    const address = nanocurrency.deriveAddress(this.pubKey, {useNanoPrefix: true});
+    this.pubKey = pawcurrency.derivePublicKey(privKey);
+    const address = pawcurrency.deriveAddress(this.pubKey, {useNanoPrefix: true});
 
     // get account info required to build the block
     let balance = 0; // balance will be 0 if open block
@@ -497,7 +497,7 @@ export class SweeperComponent implements OnInit {
       }
 
       // nano seed or private key
-      if (keyType === 'nano_seed' || seed !== '' || keyType === 'bip39_seed') {
+      if (keyType === 'adia_seed' || seed !== '' || keyType === 'bip39_seed') {
         // check if a private key first (no index)
         this.appendLog('Checking if input is a private key');
         if (seed === '') { // seed from input, no mnemonic
@@ -509,7 +509,7 @@ export class SweeperComponent implements OnInit {
           // start with blake2b derivation (but not if the mnemonic is anything other than 24 words)
           if (keyType !== 'bip39_seed' && seed.length === 64) {
             for (let i = parseInt(this.startIndex, 10); i <= parseInt(this.endIndex, 10); i++) {
-              privKey = nanocurrency.deriveSecretKey(seed, i);
+              privKey = pawcurrency.deriveSecretKey(seed, i);
               privKeys.push([privKey, 'blake2b', i]);
             }
           }

@@ -3,7 +3,7 @@ import {UtilService} from './util.service';
 import { NotificationService } from './notification.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import * as nanocurrency from 'nanocurrency';
+import * as pawcurrency from 'pawcurrency';
 import { environment } from 'environments/environment';
 const base32 = require('nano-base32');
 
@@ -129,7 +129,7 @@ export class MusigService {
     let addresses = [];
     if (runWithPubkeys && this.savedPublicKeys?.length > 1) {
       for (const pubKey of this.savedPublicKeys) {
-        addresses.push(nanocurrency.deriveAddress(pubKey, {useNanoPrefix: true}));
+        addresses.push(pawcurrency.deriveAddress(pubKey, {useNanoPrefix: true}));
       }
     } else {
       addresses = storedAccounts;
@@ -140,8 +140,8 @@ export class MusigService {
     const pubkeys = [];
     for (let address of addresses) {
       address = address.trim();
-      if (!address.startsWith('xrb_') && !address.startsWith('nano_')) {
-        throw new Error('Nano addresses must start with xrb_ or nano_');
+      if (!address.startsWith('paw_') && !address.startsWith('adia_')) {
+        throw new Error('Nano addresses must start with paw_ or adia_');
       }
       address = address.split('_', 2)[1];
       try {
@@ -188,7 +188,7 @@ export class MusigService {
     for (let i = 0; i < 5; i++) {
       fullAddress[32 + i] = checksum[i];
     }
-    const fullAddressFinal = 'nano_' + base32.encode(fullAddress);
+    const fullAddressFinal = 'adia_' + base32.encode(fullAddress);
     console.log('Multisig Account: ' + fullAddressFinal);
     this.wasm.musig_free(outPtr);
     return {'multisig': fullAddressFinal, 'pubkey': aggPubkey};
@@ -262,7 +262,7 @@ export class MusigService {
           this.savedPublicKeys.push(input.substring(66, 130).toLowerCase());
         }
         // Add the public key from self
-        const pub = nanocurrency.derivePublicKey(privateKey);
+        const pub = pawcurrency.derivePublicKey(privateKey);
         if (this.savedPublicKeys.includes(pub.toLowerCase())) {
           throw new Error('You must use different private keys for each participant!');
         }

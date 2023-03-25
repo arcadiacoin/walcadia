@@ -17,6 +17,8 @@ import {AccountsComponent} from './components/accounts/accounts.component';
 import {ApiService} from './services/api.service';
 import {AddressBookService} from './services/address-book.service';
 import {SendComponent} from './components/send/send.component';
+import {ThirdPartyAppComponent} from './components/thirdpartyapps/thirdpartyapp.component';
+import {AppSelectorComponent} from './components/thirdpartyapps/appselector.component';
 import {SqueezePipe} from './pipes/squeeze.pipe';
 import {ModalService} from './services/modal.service';
 import {AddressBookComponent} from './components/address-book/address-book.component';
@@ -111,7 +113,9 @@ import { NoPaddingZerosPipe } from './pipes/no-padding-zeros.pipe';
     MultisigComponent,
     KeygeneratorComponent,
     NanoTransactionMobileComponent,
-    NoPaddingZerosPipe
+    NoPaddingZerosPipe,
+	ThirdPartyAppComponent,
+	AppSelectorComponent,
   ],
   imports: [
     BrowserModule,

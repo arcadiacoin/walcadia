@@ -47,7 +47,7 @@ export class ConfigureAppComponent implements OnInit {
   selectedLanguage = this.languages[0].id;
 
   denominations = [
-    { name: 'XNO', value: 'mnano' },
+    { name: 'ADIA', value: 'mnano' },
     { name: 'knano', value: 'knano' },
     { name: 'nano', value: 'nano' },
   ];
@@ -149,8 +149,8 @@ export class ConfigureAppComponent implements OnInit {
   selectedPendingOption = this.pendingOptions[0].value;
 
   // prefixOptions = [
-  //   { name: 'xrb_', value: 'xrb' },
-  //   { name: 'nano_', value: 'nano' },
+  //   { name: 'paw_', value: 'xrb' },
+  //   { name: 'adia_', value: 'nano' },
   // ];
   // selectedPrefix = this.prefixOptions[0].value;
 

@@ -52,15 +52,15 @@ export class MultisigComponent implements OnInit {
   addAccount() {
     if (this.accountAddStatus !== 1) {
       this.notificationService.removeNotification('account-invalid');
-      this.notificationService.sendWarning('Invalid nano address!', {identifier: 'account-invalid'});
+      this.notificationService.sendWarning('Invalid arcadia address!', {identifier: 'account-invalid'});
       return;
     }
-    if (this.storedAccounts.includes(this.accountAdd.replace('xrb_', 'nano_').toLocaleLowerCase())) {
+    if (this.storedAccounts.includes(this.accountAdd.replace('paw_', 'adia_').toLocaleLowerCase())) {
       this.notificationService.removeNotification('account-added');
       this.notificationService.sendWarning('Account already added!', {identifier: 'account-added'});
       return;
     }
-    this.storedAccounts.push(this.accountAdd.replace('xrb_', 'nano_').toLocaleLowerCase());
+    this.storedAccounts.push(this.accountAdd.replace('paw_', 'adia_').toLocaleLowerCase());
     this.accountAdd = '';
     this.accountAddStatus = null;
     this.showAddBox = false;
@@ -119,7 +119,7 @@ export class MultisigComponent implements OnInit {
       return false;
     }
     let url = null;
-    if (string.startsWith('nanosign:')) {
+    if (string.startsWith('adiasign:')) {
       url = new URL(string);
     }
     if (url && this.remoteSignService.checkSignBlock(url.pathname)) {
@@ -133,18 +133,18 @@ export class MultisigComponent implements OnInit {
     if (this.validateMultisig()) {
       this.router.navigate(['account', this.multisigAccount], { queryParams: {sign: 1}});
     } else {
-      this.notificationService.sendWarning('Invalid nano account!');
+      this.notificationService.sendWarning('Invalid arcadia account!');
     }
   }
 
   navigateBlock(block) {
     let badScheme = false;
 
-    if (block.startsWith('nanosign:') || block.startsWith('nanoprocess:')) {
+    if (block.startsWith('adiasign:') || block.startsWith('adiaprocess:')) {
       const url = new URL(block);
-      if (url.protocol === 'nanosign:') {
+      if (url.protocol === 'adiasign:') {
         this.remoteSignService.navigateSignBlock(url);
-      } else if (url.protocol === 'nanoprocess:') {
+      } else if (url.protocol === 'adiaprocess:') {
         this.remoteSignService.navigateProcessBlock(url);
       } else {
         badScheme = true;

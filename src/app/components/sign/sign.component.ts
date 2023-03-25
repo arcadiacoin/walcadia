@@ -13,10 +13,10 @@ import {ApiService} from '../../services/api.service';
 import {PriceService} from '../../services/price.service';
 import * as QRCode from 'qrcode';
 import * as bip39 from 'bip39';
-import * as bip39Wallet from 'nanocurrency-web';
+import * as bip39Wallet from 'pawcurrency-web';
 import { QrModalService } from '../../services/qr-modal.service';
 import hermes from 'hermes-channel';
-import * as nanocurrency from 'nanocurrency';
+import * as pawcurrency from 'pawcurrency';
 import { MusigService } from '../../services/musig.service';
 import { environment } from 'environments/environment';
 
@@ -369,7 +369,7 @@ export class SignComponent implements OnInit {
     switch (this.signTypeSelected) {
       // wallet
       case this.signTypes[0]:
-        this.walletAccount = this.accounts.find(a => a.id.replace('xrb_', 'nano_') === this.signatureAccount);
+        this.walletAccount = this.accounts.find(a => a.id.replace('paw_', 'adia_') === this.signatureAccount);
         if (!this.walletAccount) {
           this.signatureMessage = 'Could not find a matching wallet account to sign with. Make sure it\'s added under your accounts';
         } else {
@@ -436,9 +436,9 @@ export class SignComponent implements OnInit {
     }
 
     if (this.txType === TxType.send || this.txType === TxType.change) {
-      this.signatureAccount = this.fromAccountID.replace('xrb_', 'nano_').toLowerCase();
+      this.signatureAccount = this.fromAccountID.replace('paw_', 'adia_').toLowerCase();
     } else if (this.txType === TxType.receive || this.txType === TxType.open) {
-      this.signatureAccount = this.toAccountID.replace('xrb_', 'nano_').toLowerCase();
+      this.signatureAccount = this.toAccountID.replace('paw_', 'adia_').toLowerCase();
     }
 
     if (this.shouldSign) {
@@ -541,10 +541,10 @@ export class SignComponent implements OnInit {
         this.clean(this.previousBlock);
       }
       if (this.previousBlock) {
-        this.qrString = 'nanoprocess:{"block":' + JSON.stringify(block) +
+        this.qrString = 'adiaprocess:{"block":' + JSON.stringify(block) +
         ',"previous":' + JSON.stringify(this.previousBlock) + '}';
       } else {
-        this.qrString = 'nanoprocess:{"block":' + JSON.stringify(block) + '}';
+        this.qrString = 'adiaprocess:{"block":' + JSON.stringify(block) + '}';
       }
 
       const qrCode = await QRCode.toDataURL(this.qrString, { errorCorrectionLevel: 'L', scale: 16 });
@@ -706,7 +706,7 @@ export class SignComponent implements OnInit {
     }
 
     // nano seed
-    if (keyType === 'nano_seed' || seed !== '' || keyType === 'bip39_seed') {
+    if (keyType === 'adia_seed' || seed !== '' || keyType === 'bip39_seed') {
       if (seed === '') { // seed from input, no mnemonic
         seed = input;
       }
@@ -750,7 +750,7 @@ export class SignComponent implements OnInit {
     // validate nano seed
     if (key.length === 64) {
       if (this.util.nano.isValidSeed(key)) {
-        return 'nano_seed';
+        return 'adia_seed';
       }
     }
     // validate bip39 seed
@@ -959,7 +959,7 @@ export class SignComponent implements OnInit {
 
   // generate shared data to be sent to other participants
   getMultisigLink() {
-    return 'nanosign:{"block":' + JSON.stringify(this.currentBlock) +
+    return 'adiasign:{"block":' + JSON.stringify(this.currentBlock) +
     ',"previous":' + JSON.stringify(this.previousBlock) +  ',"participants":' + this.participants + '}';
   }
 
@@ -1065,7 +1065,7 @@ export class SignComponent implements OnInit {
 
   multiSign() {
     const result = this.musigService.runMultiSign(this.privateKey, this.blockHash, this.inputMultisigData);
-    // used for validation when the final nano block is created
+    // used for validation when the final arcadia block is created
     if (result && result.multisig !== '') {
       this.multisigAccount = result.multisig;
     }
@@ -1074,7 +1074,7 @@ export class SignComponent implements OnInit {
       console.log('Started multisig using block hash: ' + this.blockHash);
       // Combine output with public key
       const output = this.activeStep + ':' + this.util.hex.fromUint8(result.outbuf.subarray(33)) +
-        nanocurrency.derivePublicKey(this.privateKey);
+        pawcurrency.derivePublicKey(this.privateKey);
       this.activeStep = this.activeStep + 1;
       this.outputMultisigData = output.toUpperCase();
       this.generateOutputQR();

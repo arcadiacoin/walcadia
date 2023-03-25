@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, OnInit, ViewChild, Renderer2} from '@angular/core';
+import {Component, ElementRef, HostListener, OnInit, ViewChild, Renderer2, ViewChildren, QueryList} from '@angular/core';
 import {WalletService} from './services/wallet.service';
 import {AddressBookService} from './services/address-book.service';
 import {AppSettingsService} from './services/app-settings.service';
@@ -7,7 +7,7 @@ import {PriceService} from './services/price.service';
 import {UtilService} from './services/util.service';
 import {NotificationService} from './services/notification.service';
 import {WorkPoolService} from './services/work-pool.service';
-import {Router} from '@angular/router';
+import {Router, NavigationEnd, ActivatedRoute} from '@angular/router';
 import {SwUpdate} from '@angular/service-worker';
 import {RepresentativeService} from './services/representative.service';
 import {NodeService} from './services/node.service';
@@ -15,6 +15,7 @@ import { DesktopService, LedgerService } from './services';
 import { environment } from 'environments/environment';
 import { DeeplinkService } from './services/deeplink.service';
 import { TranslocoService } from '@ngneat/transloco';
+import { AppSelectorService } from './services/app-selector.service';
 
 
 @Component({
@@ -41,7 +42,10 @@ export class AppComponent implements OnInit {
     private ledger: LedgerService,
     private renderer: Renderer2,
     private deeplinkService: DeeplinkService,
-    private translate: TranslocoService) {
+    private translate: TranslocoService,
+	private activatedRoute: ActivatedRoute,
+	public appSelector: AppSelectorService
+	) {
       router.events.subscribe(() => {
         this.closeNav();
       });
@@ -49,6 +53,7 @@ export class AppComponent implements OnInit {
 
   @ViewChild('selectButton') selectButton: ElementRef;
   @ViewChild('accountsDropdown') accountsDropdown: ElementRef;
+  @ViewChildren('appFrame') appFrames: QueryList<ElementRef<HTMLIFrameElement>>;
 
   wallet = this.walletService.wallet;
   node = this.nodeService.node;
@@ -80,12 +85,38 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit() {
+	this.appSelector.retrieveAppsFromApi();
+	this.router.events.subscribe(event => {
+	  if (event instanceof NavigationEnd) {
+		// Get the app ID from the URL
+		const split = this.router.routerState.snapshot.url.split('/');
+		const appId = (split.length > 2) ? split[2] : 'unselected';
+
+		// Set the visible property of the app with the matching ID to true, and set all other apps to false
+		this.appSelector.getSelectedApps().forEach(app => {
+		  app.visible = app.id == appId;
+		});
+		
+		// Set the src attribute of the app frame with the matching ID
+		if(typeof(this.appFrames) != 'undefined')
+		{
+			this.appFrames.forEach(appFrame => {
+			  if (appFrame.nativeElement.id == appId) {
+				if (appFrame.nativeElement.src == '') {
+					appFrame.nativeElement.src = this.formatAppUrl(this.appSelector.getSelectedApps().find(app => app.id == appId).url);
+					this.appSelector.getSelectedApps().find(app => app.id == appId).is_loaded = true;
+				}
+			  }
+			});
+		}
+	  }
+	});
     this.onWindowResize(window);
     this.settings.loadAppSettings();
 
     this.updateAppTheme();
 
-    // New for v19: Patch saved xrb_ prefixes to nano_
+    // New for v19: Patch saved paw_ prefixes to adia_
     await this.patchXrbToNanoPrefixData();
 
     // set translation language
@@ -119,7 +150,7 @@ export class AppComponent implements OnInit {
 
     await this.walletService.reloadBalances();
 
-    // Workaround fix for github pages when Nault is refreshed (or externally linked) and there is a subpath for example to the send screen.
+    // Workaround fix for github pages when Walcadia is refreshed (or externally linked) and there is a subpath for example to the send screen.
     // This data is saved from the 404.html page
     const path = localStorage.getItem('path');
 
@@ -184,7 +215,7 @@ export class AppComponent implements OnInit {
     // Notify user after service worker was updated
     this.updates.activated.subscribe((event) => {
       console.log(`SW update successful. Current: ${event.current.hash}`);
-      this.notifications.sendSuccess('Nault was updated successfully.');
+      this.notifications.sendSuccess('Walcadia was updated successfully.');
     });
 
     // Check how long the wallet has been inactive, and lock it if it's been too long
@@ -204,8 +235,25 @@ export class AppComponent implements OnInit {
       if (!this.settings.settings.serverAPI) return;
       await this.updateFiatPrices();
     } catch (err) {
-      this.notifications.sendWarning(`There was an issue retrieving latest nano price.  Ensure your AdBlocker is disabled on this page then reload to see accurate FIAT values.`, { length: 0, identifier: `price-adblock` });
+      this.notifications.sendWarning(`There was an issue retrieving latest arcadia price.  Ensure your AdBlocker is disabled on this page then reload to see accurate FIAT values.`, { length: 0, identifier: `price-adblock` });
     }
+  }
+
+  // Third party apps
+  closeApp(app: any) {
+	this.appFrames.forEach(appFrame => {
+		 if (appFrame.nativeElement.id == app.id) {
+			appFrame.nativeElement.removeAttribute('src');
+			app.is_loaded = false;
+		 }
+	});
+  }
+  formatAppUrl(url: string) {
+	  if(url.indexOf('?') !== -1) {
+		  return url + '&framed';
+	  }
+	  
+	return url + '?framed';
   }
 
   onWindowResize(windowObject) {
@@ -222,14 +270,14 @@ export class AppComponent implements OnInit {
   }
 
   /*
-    This is important as it looks through saved data using hardcoded xrb_ prefixes
-    (Your wallet, address book, rep list, etc) and updates them to nano_ prefix for v19 RPC
+    This is important as it looks through saved data using hardcoded paw_ prefixes
+    (Your wallet, address book, rep list, etc) and updates them to adia_ prefix for v19 RPC
    */
   async patchXrbToNanoPrefixData() {
     // If wallet is version 2, data has already been patched.  Otherwise, patch all data
     if (this.settings.settings.walletVersion >= 2) return;
 
-    await this.walletService.patchOldSavedData(); // Change saved xrb_ addresses to nano_
+    await this.walletService.patchOldSavedData(); // Change saved paw_ addresses to adia_
     this.addressBook.patchXrbPrefixData();
     this.representative.patchXrbPrefixData();
 
@@ -305,7 +353,7 @@ export class AppComponent implements OnInit {
     if (!searchData.length) return;
 
     const isValidNanoAccount = (
-        ( searchData.startsWith('xrb_') || searchData.startsWith('nano_') )
+        ( searchData.startsWith('paw_') || searchData.startsWith('adia_') )
       && this.util.account.isValidAccount(searchData)
     );
 
@@ -324,7 +372,7 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    this.notifications.sendWarning(`Invalid nano address or block hash! Please double check your input`);
+    this.notifications.sendWarning(`Invalid arcadia address or block hash! Please double check your input`);
   }
 
   updateIdleTime() {
@@ -337,7 +385,7 @@ export class AppComponent implements OnInit {
       return;
     }
     this.walletService.reloadBalances();
-    this.notifications.sendInfo(`Attempting to reconnect to nano node`);
+    this.notifications.sendInfo(`Attempting to reconnect to arcadia node`);
   }
 
   async updateFiatPrices() {

@@ -94,7 +94,7 @@ export interface WalletApiAccount extends BaseApiAccount {
 @Injectable()
 export class WalletService {
   nano = 1000000000000000000000000;
-  storeKey = `nanovault-wallet`;
+  storeKey = `arcadia-wallet-wallet`;
 
   wallet: FullWallet = {
     type: 'seed',
@@ -199,17 +199,17 @@ export class WalletService {
           if (transaction.block.subtype === 'send') {
             // Incoming transaction
             if (this.addressBook.getTransactionTrackingById(addressLink)) {
-              this.notifications.sendInfo(`Tracked address ${accountHrefLink} can now receive ${trackedAmount} XNO`, { length: 10000 });
+              this.notifications.sendInfo(`Tracked address ${accountHrefLink} can now receive ${trackedAmount} ADIA`, { length: 10000 });
               console.log(`Tracked incoming block to: ${address} - Ӿ${trackedAmount}`);
             }
             // Outgoing transaction
             if (this.addressBook.getTransactionTrackingById(address)) {
-              this.notifications.sendInfo(`Tracked address ${accountHref} sent ${trackedAmount} XNO`, { length: 10000 });
+              this.notifications.sendInfo(`Tracked address ${accountHref} sent ${trackedAmount} ADIA`, { length: 10000 });
               console.log(`Tracked send block from: ${address} - Ӿ${trackedAmount}`);
             }
           } else if (transaction.block.subtype === 'receive' && this.addressBook.getTransactionTrackingById(address)) {
             // Receive transaction
-            this.notifications.sendInfo(`Tracked address ${accountHref} received incoming ${trackedAmount} XNO`, { length: 10000 });
+            this.notifications.sendInfo(`Tracked address ${accountHref} received incoming ${trackedAmount} ADIA`, { length: 10000 });
             console.log(`Tracked receive block to: ${address} - Ӿ${trackedAmount}`);
           } else if (transaction.block.subtype === 'change' && this.addressBook.getTransactionTrackingById(address)) {
             // Change transaction
@@ -286,7 +286,7 @@ export class WalletService {
 
 
   async patchOldSavedData() {
-    // Look for saved accounts using an xrb_ prefix
+    // Look for saved accounts using an paw_ prefix
     const walletData = localStorage.getItem(this.storeKey);
     if (!walletData) return;
 
@@ -294,8 +294,8 @@ export class WalletService {
 
     if (walletJson.accounts) {
       const newAccounts = walletJson.accounts.map(account => {
-        if (account.id.indexOf('xrb_') !== -1) {
-          account.id = account.id.replace('xrb_', 'nano_');
+        if (account.id.indexOf('paw_') !== -1) {
+          account.id = account.id.replace('paw_', 'adia_');
         }
         return account;
       });
@@ -492,7 +492,7 @@ export class WalletService {
 
         } else if (this.wallet.type === 'ledger') {
           const account: any = await this.ledgerService.getLedgerAccount(index);
-          accountAddress = account.address.replace('xrb_', 'nano_');
+          accountAddress = account.address.replace('paw_', 'adia_');
           accountPublicKey = account.publicKey.toUpperCase();
 
         } else {
@@ -570,7 +570,7 @@ export class WalletService {
     const account: any = await this.ledgerService.getLedgerAccount(index);
 
     const accountID = account.address;
-    const nanoAccountID = accountID.replace('xrb_', 'nano_');
+    const nanoAccountID = accountID.replace('paw_', 'adia_');
     const addressBookName = this.addressBook.getAccountName(nanoAccountID);
 
     const newAccount: WalletAccount = {
@@ -1020,7 +1020,7 @@ export class WalletService {
 
       const receiveAmount = this.util.nano.rawToMnano(nextBlock.amount);
       this.notifications.removeNotification('success-receive');
-      this.notifications.sendSuccess(`Successfully received ${receiveAmount.isZero() ? '' : this.noZerosPipe.transform(receiveAmount.toFixed(6)) } XNO!`, { identifier: 'success-receive' });
+      this.notifications.sendSuccess(`Successfully received ${receiveAmount.isZero() ? '' : this.noZerosPipe.transform(receiveAmount.toFixed(6)) } ADIA!`, { identifier: 'success-receive' });
 
       // remove after processing
       // list also updated with reloadBalances but not if called too fast

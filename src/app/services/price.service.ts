@@ -4,8 +4,8 @@ import {BehaviorSubject} from 'rxjs';
 
 @Injectable()
 export class PriceService {
-  storeKey = `nanovault-price`;
-  apiUrl = `https://api.coingecko.com/api/v3/coins/nano?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
+  storeKey = `arcadia-wallet-price`;
+  apiUrl = `https://api.coingecko.com/api/v3/coins/paw?localization=false&tickers=false&market_data=true&community_data=false&developer_data=false&sparkline=false`;
 
   price = {
     lastPrice: 0,
@@ -28,7 +28,7 @@ export class PriceService {
     const currencyPrice = quote[currency.toLowerCase()];
     const btcPrice = quote.btc;
 
-    this.price.lastPrice = currencyPrice;
+    this.price.lastPrice = parseFloat((currencyPrice * 10000000).toFixed(10));
     this.price.lastPriceBTC = btcPrice;
 
     this.savePrice();

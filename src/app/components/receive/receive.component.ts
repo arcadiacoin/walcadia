@@ -292,7 +292,7 @@ export class ReceiveComponent implements OnInit, OnDestroy {
     if (account.length > 1) {
       this.qrAccount = account;
       this.qrCodeImage = null;
-      qrCode = await QRCode.toDataURL(`nano:${account}${this.qrAmount ? `?amount=${this.qrAmount.toString(10)}` : ''}`, {scale: 7});
+      qrCode = await QRCode.toDataURL(`adia:${account}${this.qrAmount ? `?amount=${this.qrAmount.toString(10)}` : ''}`, {scale: 7});
     }
     this.qrCodeImage = qrCode;
   }
@@ -307,7 +307,7 @@ export class ReceiveComponent implements OnInit, OnDestroy {
     }
     if (this.qrAccount.length > 1) {
       this.qrCodeImage = null;
-      qrCode = await QRCode.toDataURL(`nano:${this.qrAccount}${this.qrAmount ? `?amount=${this.qrAmount.toString(10)}` : ''}`, {scale: 7});
+      qrCode = await QRCode.toDataURL(`adia:${this.qrAccount}${this.qrAmount ? `?amount=${this.qrAmount.toString(10)}` : ''}`, {scale: 7});
       this.qrCodeImage = qrCode;
     }
   }
@@ -356,7 +356,7 @@ export class ReceiveComponent implements OnInit, OnDestroy {
       receivableBlock.received = true;
       this.mobileTransactionMenuModal.hide();
       this.notificationService.removeNotification('success-receive');
-      this.notificationService.sendSuccess(`Successfully received nano!`, { identifier: 'success-receive' });
+      this.notificationService.sendSuccess(`Successfully received arcadia!`, { identifier: 'success-receive' });
       // pending has been processed, can be removed from the list
       // list also updated with reloadBalances but not if called too fast
       this.walletService.removePendingBlock(receivableBlock.hash);
