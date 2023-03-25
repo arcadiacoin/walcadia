@@ -1,4 +1,4 @@
-# Nault
+# Walcadia
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/arcadiacoin/walcadia)
 [![GitHub All Releases](https://img.shields.io/github/downloads/arcadiacoin/walcadia/total)](https://github.com/arcadiacoin/walcadia/releases/latest)
