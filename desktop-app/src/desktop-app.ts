@@ -4,7 +4,7 @@ import { app, BrowserWindow, shell, Menu, screen, dialog, ipcMain } from 'electr
 import { autoUpdater } from 'electron-updater';
 import * as url from 'url';
 import * as path from 'path';
-import { initialize } from './lib/ledger';
+//import { initialize } from './lib/ledger';
 import * as settings from 'electron-settings';
 const log = require('electron-log');
 // Don't want errors to display when checking for update
@@ -164,7 +164,7 @@ if (process.platform === 'darwin') {
 }
 
 // Initialize Ledger device detection
-initialize();
+//initialize();
 
 let mainWindow: BrowserWindow;
 
