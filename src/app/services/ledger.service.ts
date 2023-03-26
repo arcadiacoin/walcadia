@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import Nano from 'hw-app-nano';
+/*
 import TransportU2F from '@ledgerhq/hw-transport-u2f';
 import TransportUSB from '@ledgerhq/hw-transport-webusb';
 import TransportHID from '@ledgerhq/hw-transport-webhid';
 import TransportBLE from '@ledgerhq/hw-transport-web-ble';
 import Transport from '@ledgerhq/hw-transport';
 import * as LedgerLogs from '@ledgerhq/logs';
+*/
 import {Subject} from 'rxjs';
 import {ApiService} from './api.service';
 import {NotificationService} from './notification.service';
@@ -30,7 +32,8 @@ export const LedgerStatus = {
 export interface LedgerData {
   status: string;
   nano: any|null;
-  transport: Transport|null;
+  //transport: Transport|null;
+  transport: null;
 }
 
 export interface LedgerLog {
@@ -70,7 +73,7 @@ export class LedgerService {
   supportsUSB = false;
 
   transportMode: 'U2F' | 'USB' | 'HID' | 'Bluetooth' = 'U2F';
-  DynamicTransport = TransportU2F;
+  //DynamicTransport = TransportU2F;
 
   ledgerStatus$: Subject<any> = new Subject();
   desktopMessage$ = new Subject();
@@ -125,10 +128,11 @@ export class LedgerService {
    */
   async checkBrowserSupport() {
     await Promise.all([
-      TransportU2F.isSupported().then(supported => this.supportsU2F = supported),
+      /*TransportU2F.isSupported().then(supported => this.supportsU2F = supported),
       TransportHID.isSupported().then(supported => this.supportsWebHID = supported),
       TransportUSB.isSupported().then(supported => this.supportsWebUSB = supported),
       TransportBLE.isSupported().then(supported => this.supportsBluetooth = supported),
+	  */
     ]);
     this.supportsUSB = this.supportsU2F || this.supportsWebHID || this.supportsWebUSB;
   }
@@ -142,19 +146,19 @@ export class LedgerService {
     if (isWindows && this.supportsWebHID) {
       // Prefer WebHID on Windows due to stability issues with WebUSB
       this.transportMode = 'HID';
-      this.DynamicTransport = TransportHID;
+      //this.DynamicTransport = TransportHID;
     } else if (this.supportsWebUSB) {
       // Else prefer WebUSB
       this.transportMode = 'USB';
-      this.DynamicTransport = TransportUSB;
+      //this.DynamicTransport = TransportUSB;
     } else if (this.supportsWebHID) {
       // Fallback to WebHID
       this.transportMode = 'HID';
-      this.DynamicTransport = TransportHID;
+      //this.DynamicTransport = TransportHID;
     } else {
       // Legacy browsers
       this.transportMode = 'U2F';
-      this.DynamicTransport = TransportU2F;
+      //this.DynamicTransport = TransportU2F;
     }
   }
 
@@ -165,7 +169,7 @@ export class LedgerService {
   enableBluetoothMode(enabled: boolean) {
     if (this.supportsBluetooth && enabled) {
       this.transportMode = 'Bluetooth';
-      this.DynamicTransport = TransportBLE;
+      //this.DynamicTransport = TransportBLE;
     } else {
       this.detectUsbTransport();
     }
@@ -267,7 +271,7 @@ export class LedgerService {
 
   async loadTransport() {
     return new Promise((resolve, reject) => {
-      this.DynamicTransport.create().then(trans => {
+      /*this.DynamicTransport.create().then(trans => {
 
         // LedgerLogs.listen((log: LedgerLog) => console.log(`Ledger: ${log.type}: ${log.message}`));
         this.ledger.transport = trans;
@@ -276,6 +280,7 @@ export class LedgerService {
 
         resolve(this.ledger.transport);
       }).catch(reject);
+	  */
     });
   }
 
@@ -454,7 +459,7 @@ export class LedgerService {
     if (this.isDesktop) {
       return this.signBlockDesktop(accountIndex, blockData);
     } else {
-      this.ledger.transport.setExchangeTimeout(this.waitTimeout);
+      //this.ledger.transport.setExchangeTimeout(this.waitTimeout);
       return await this.ledger.nano.signBlock(this.ledgerPath(accountIndex), blockData);
     }
   }
@@ -464,7 +469,7 @@ export class LedgerService {
   }
 
   async getLedgerAccountWeb(accountIndex: number, showOnScreen = false) {
-    this.ledger.transport.setExchangeTimeout(showOnScreen ? this.waitTimeout : this.normalTimeout);
+    //this.ledger.transport.setExchangeTimeout(showOnScreen ? this.waitTimeout : this.normalTimeout);
     try {
       return await this.ledger.nano.getAddress(this.ledgerPath(accountIndex), showOnScreen);
     } catch (err) {
