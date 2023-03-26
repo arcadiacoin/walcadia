@@ -13,13 +13,13 @@ const log = require('electron-log');
 let showUpdateErrors = false;
 let saveTimeout = null;
 let isDownloading = false;
-const nano_schemes = ['nano', 'nanorep', 'nanoseed', 'nanokey', 'nanosign', 'nanoprocess'];
+const adia_schemes = ['adia', 'adiarep', 'adiaseed', 'adiakey', 'adiasign', 'adiaprocess'];
 
 /**
  * By default, the logger writes logs to the following locations:
-  on Linux: ~/.config/nault/logs/{process type}.log
-  on macOS: ~/Library/Logs/nault/{process type}.log
-  on Windows: %USERPROFILE%\AppData\Roaming\nault\logs\{process type}.log
+  on Linux: ~/.config/walcadia/logs/{process type}.log
+  on macOS: ~/Library/Logs/walcadia/{process type}.log
+  on Windows: %USERPROFILE%\AppData\Roaming\walcadia\logs\{process type}.log
 
   error, warn, info, verbose, debug, silly
  * */
@@ -28,13 +28,13 @@ const nano_schemes = ['nano', 'nanorep', 'nanoseed', 'nanokey', 'nanosign', 'nan
 let logLocation = 'Unknown';
 switch (process.platform) {
   case 'win32':
-    logLocation = '%USERPROFILE%\\AppData\\Roaming\\nault\\logs\\main.log';
+    logLocation = '%USERPROFILE%\\AppData\\Roaming\\walcadia\\logs\\main.log';
     break;
   case 'linux':
-    logLocation = '~/.config/nault/logs/main.log';
+    logLocation = '~/.config/walcadia/logs/main.log';
     break;
   case 'darwin':
-    logLocation = '~/Library/Logs/nault/main.log';
+    logLocation = '~/Library/Logs/walcadia/main.log';
     break;
 }
 
@@ -108,7 +108,7 @@ class AppUpdater {
         type: 'info',
         buttons: ['Update', 'Ask Later'],
         title: 'New Version',
-        message: 'An update for Nault is available!',
+        message: 'An update for Walcadia is available!',
         detail: 'Do you want to download and install it?'
       }
 
@@ -139,13 +139,13 @@ class AppUpdater {
       if (!showUpdateErrors) {
         return;
       }
-      mainWindow.setTitle(`Nault - ${autoUpdater.currentVersion}`); // reset title
+      mainWindow.setTitle(`Walcadia - ${autoUpdater.currentVersion}`); // reset title
       showUpdateErrors = false; // disable errors
       const dialogOpts = {
         type: 'error',
         buttons: ['OK'],
         title: 'Update Error',
-        message: 'Something went wrong while downloading Nault.',
+        message: 'Something went wrong while downloading Walcadia.',
         detail: `You will be notified again on next start.\nMore details in the log at: ${logLocation}`
       }
 
@@ -155,12 +155,12 @@ class AppUpdater {
 }
 new AppUpdater();
 
-// Register handler for nano: links
+// Register handler for adia: links
 if (process.platform === 'darwin') {
-  nano_schemes.forEach((scheme) => app.setAsDefaultProtocolClient(scheme));
+  adia_schemes.forEach((scheme) => app.setAsDefaultProtocolClient(scheme));
 } else {
   const args = process.argv[1] ? [path.resolve(process.argv[1])] : [];
-  nano_schemes.forEach((scheme) => app.setAsDefaultProtocolClient(scheme, process.execPath, args));
+  adia_schemes.forEach((scheme) => app.setAsDefaultProtocolClient(scheme, process.execPath, args));
 }
 
 // Initialize Ledger device detection
@@ -208,7 +208,7 @@ function createWindow () {
   });
 
   mainWindow.webContents.on('did-finish-load', function () {
-    mainWindow.setTitle(`Nault - ${autoUpdater.currentVersion}`);
+    mainWindow.setTitle(`Walcadia - ${autoUpdater.currentVersion}`);
   });
 
   const menuTemplate = getApplicationMenu();
@@ -226,7 +226,7 @@ function sendStatusToWindow(progressObj) {
   // sending message to ipcRenderer can be done as well but not sure where and how to display it
   // using the title bar instead
   // mainWindow.webContents.send('downloading', Math.round(progressObj.percent));
-  mainWindow.setTitle(`Nault - ${autoUpdater.currentVersion} - Downloading Update: ${Math.round(progressObj.percent)} %`);
+  mainWindow.setTitle(`Walcadia - ${autoUpdater.currentVersion} - Downloading Update: ${Math.round(progressObj.percent)} %`);
 }
 
 // run only one app
@@ -249,11 +249,11 @@ if (!appLock) {
     checkForUpdates();
   });
 
-  // Refocus the window if the user attempts to open Nault while it is already open
+  // Refocus the window if the user attempts to open Walcadia while it is already open
   app.on('second-instance', (event, argv, workingDirectory) => {
     if (mainWindow) {
 
-      // Detect on windows when the application has been loaded using a nano: link, send it to the wallet to load
+      // Detect on windows when the application has been loaded using a adia: link, send it to the wallet to load
       if (process.platform === 'win32') {
         const deeplink = findDeeplink(argv);
         if (deeplink) handleDeeplink(deeplink);
@@ -266,7 +266,7 @@ if (!appLock) {
     }
   });
 
-  // Detect on macos when the application has been loaded using a nano: link, send it to the wallet to load
+  // Detect on macos when the application has been loaded using a adia: link, send it to the wallet to load
   app.on('will-finish-launching', () => {
     app.on('open-url', (event, eventpath) => {
       if (!mainWindow) {
@@ -341,29 +341,25 @@ function getApplicationMenu() {
       role: 'help',
       submenu: [
         {
-          label: 'Nault Help Docs',
-          click () { loadExternal('https://docs.nault.cc/'); }
+          label: 'Reddit (r/walcadia)',
+          click () { loadExternal('https://www.reddit.com/r/walcadia'); }
         },
         {
-          label: 'Reddit (r/nanocurrency)',
-          click () { loadExternal('https://www.reddit.com/r/nanocurrency'); }
-        },
-        {
-          label: 'Discord (#nault)',
-          click () { loadExternal('https://discord.nanocenter.org/'); }
+          label: 'Discord',
+          click () { loadExternal('https://chat.arcadiacoin.net/'); }
         },
         {type: 'separator'},
         {
           label: 'View GitHub',
-          click () { loadExternal('https://github.com/Nault/Nault'); }
+          click () { loadExternal('https://github.com/arcadiacoin/walcadia'); }
         },
         {
           label: 'Submit a bug report',
-          click () { loadExternal('https://github.com/Nault/Nault/issues/new'); }
+          click () { loadExternal('https://github.com/arcadiacoin/walcadia/issues/new'); }
         },
         {
           label: 'Release notes',
-          click () { loadExternal('https://github.com/Nault/Nault/releases'); }
+          click () { loadExternal('https://github.com/arcadiacoin/walcadia/releases'); }
         },
         {type: 'separator'},
         {
@@ -378,7 +374,7 @@ function getApplicationMenu() {
 
   if (process.platform === 'darwin') {
     template.unshift({
-      label: 'Nault',
+      label: 'Walcadia',
       submenu: [
         {role: 'about'},
         {type: 'separator'},
@@ -441,6 +437,6 @@ function handleDeeplink(deeplink: string) {
 }
 
 function findDeeplink(argv: string[]) {
-  const nano_scheme = new RegExp(`^(${nano_schemes.join('|')}):.+$`, 'g');
-  return argv.find((s) => nano_scheme.test(s));
+  const adia_scheme = new RegExp(`^(${adia_schemes.join('|')}):.+$`, 'g');
+  return argv.find((s) => adia_scheme.test(s));
 }

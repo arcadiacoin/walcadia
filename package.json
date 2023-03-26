@@ -1,9 +1,9 @@
 {
-  "name": "nault",
+  "name": "Walcadia",
   "version": "1.18.0",
   "license": "MIT",
-  "description": "Wallet for interacting with nano",
-  "author": "The Nano Community / Andrew Steele",
+  "description": "Wallet for interacting with arcadia",
+  "author": "The Arcadia Community",
   "main": "desktop-app/dist/desktop-app.js",
   "scripts": {
     "ng": "ng",
@@ -115,10 +115,10 @@
     "worker-loader": "^3.0.8"
   },
   "build": {
-    "appId": "cc.nault",
+    "appId": "arcadiacoin.net",
     "buildVersion": "1.0.0",
-    "productName": "Nault",
-    "copyright": "Copyright © 2020 The Nano Community / Andrew Steele",
+    "productName": "Walcadia",
+    "copyright": "Copyright © 2022 The Arcadia Community",
     "directories": {
       "output": "desktop-app/build",
       "buildResources": "desktop-app/assets",
@@ -130,9 +130,9 @@
       "extendInfo": {
         "CFBundleURLTypes": [
           {
-            "CFBundleURLName": "nano",
+            "CFBundleURLName": "adia",
             "CFBundleURLSchemes": [
-              "nano"
+              "adia"
             ]
           }
         ]
@@ -142,18 +142,18 @@
       "target": "AppImage",
       "icon": "desktop-app/assets/linux",
       "desktop": {
-        "GenericName": "Nano Wallet"
+        "GenericName": "Arcadia Wallet"
       }
     },
     "protocols": {
-      "name": "nano",
+      "name": "adia",
       "schemes": [
-        "nano",
-        "nanorep",
-        "nanoseed",
-        "nanokey",
-        "nanosign",
-        "nanoprocess"
+        "adia",
+        "adiarep",
+        "adiaseed",
+        "adiakey",
+        "adiasign",
+        "adiaprocess"
       ],
       "role": "Viewer"
     }
