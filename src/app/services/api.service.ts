@@ -53,6 +53,8 @@ export class ApiService {
         };
 
         this.node.setOnline();
+		// fix until v25 for https://github.com/nanocurrency/nano-node/pull/4075
+		res = JSON.parse(JSON.stringify(res).replace(new RegExp('error: Account not found', 'g'), ''));
         return res;
       })
       .catch(async err => {
