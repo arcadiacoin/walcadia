@@ -68,20 +68,20 @@ export class AppSettingsService {
       shouldRandom: false,
     },
     {
-      name: 'ArcadiaCoin Public Node',
-      value: 'rpc.arcadiacoin.net',
-      api: 'https://rpc.arcadiacoin.net',
-      ws: 'wss://ws.arcadiacoin.net',
-      auth: null,
-      shouldRandom: false,
-    },
-    {
       name: 'Walcadia Public Node',
       value: 'rpc-adia.walcadia.com',
       api: 'https://rpc-adia.walcadia.com',
       ws: 'wss://ws-adia.walcadia.com',
       auth: null,
       shouldRandom: true,
+    },
+    {
+      name: 'ArcadiaCoin Public Node',
+      value: 'rpc.arcadiacoin.net',
+      api: 'https://rpc.arcadiacoin.net',
+      ws: 'wss://ws.arcadiacoin.net',
+      auth: null,
+      shouldRandom: false,
     },
     {
       name: 'Custom',
